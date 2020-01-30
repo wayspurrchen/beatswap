@@ -62,10 +62,10 @@ This is where `beatswap` gets neat. Because it arbitrarily maps the sequence sec
 You can actually _delete_ clips entirely by using the `_` underscore. For instance:
 
 - Deletion
-    - `a__b` - "My name you cool"
+    - `a_b_` - "My is you very" (see [this video](https://www.youtube.com/watch?v=hhEBYGzADeU) for an example)
     - `____` - results in an empty audio file!
 
-For the purposes of this explanation, we've used only 4-character sequences, but there's no actual limit to the number of characters you use. Technically you could create a sequence like `adcenbeaollcuevwbkjxcrte` with 24 beats. Keep in mind that if your beats are set to 1s long, you end up with 24 second-long sequences! Of course, you can use fractional beat lengths like `0.04166` (that's just `1 / 24`), and then one single second of audio would get really screwy. It would _all_ get really screwy.
+For the purposes of this explanation, we've used only 4-character sequences, but there's no actual limit to the number of characters you use. Technically you could create a sequence like `adcenbeaollcuevwbkjxcrte` with 24 beats. Keep in mind that if your beats are set to 1s long, you end up with 24 second-long sequences! Of course, you can use fractional beat lengths like `0.04166` (that's just `1 / 24`), and then one single second of audio would get really screwy. It would _all_ get really screwy. (See an example where I did exactly this in [a video where I "beatscrewed" Lady Gaga's Bad Romance](https://www.youtube.com/watch?v=HAXfEmgOvz4).)
 
 ### Arguments
 
