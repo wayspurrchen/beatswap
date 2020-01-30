@@ -52,7 +52,7 @@ This means, take the input file (`-i`) `bobsayshello.wav`. When we're done beats
 
 ### Other sequence usages
 
-This is where `beatswap` gets neat. Because it arbitrarily maps the sequence sections in your file to the letters you specify, you do more interesting things with your sequences like repeat or delete beats. We'll use the "My name is Bob you seem very cool" example to explain.
+This is where `beatswap` gets neat. Because it arbitrarily maps the sequence sections in your file to the letters you specify, you can do more interesting things with your sequences like repeat or delete beats. We'll use the "My name is Bob you seem very cool" example to explain.
 
 - Repetition
     - `aaaa` - "My my my my you you you you"
