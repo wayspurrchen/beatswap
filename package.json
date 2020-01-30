@@ -1,0 +1,15 @@
+{
+  "name": "beatswap",
+  "version": "1.0.0",
+  "description": "A Node.js utility for resequencing clips within WAV audio files",
+  "main": "index.js",
+  "bin": {
+    "beatswap": "cli.js"
+  },
+  "author": "Way Spurr-Chen",
+  "license": "MIT",
+  "dependencies": {
+    "ciseaux": "^0.4.0",
+    "minimist": "^1.2.0"
+  }
+}
