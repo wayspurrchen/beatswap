@@ -21,6 +21,7 @@ const beatswap = (options) => {
         let runningTape = new Tape();
         // Split all of the tapes out by the number of beats there are. Bump by the startPoint, too.
         let allSlices = originalTape.slice(startPoint).split(measureCount);
+        console.log('Processing', allSlices.length, 'beats...');
 
         let currentSequenceIndex = 0;
         // The index of the set of audio clips that will be picked
@@ -31,7 +32,7 @@ const beatswap = (options) => {
             const beatTarget = sequenceOrder[currentSequenceIndex];
             // This is the adjustment we want to make for the current sequence frame,
             // given the sequence length
-            const sequenceFrameOffset = currentSequenceFrame * sequenceLength;
+            const sequenceFrameOffset = currentSequenceFrame * sequenceOrder.length;
 
             // Is the target actually null, indicating a beat omission?
             if (beatTarget === null) {

@@ -32,7 +32,7 @@ if (!beatLength) {
 }
 
 const generateSequenceOrder = (sequenceString) => {
-    const sequence = sequenceString.split('');
+    const sequence = sequenceString.split('').map(l => l.toLowerCase());
     // Becomes the map to a given beat in the specified interval
     const sequenceCharMap = {};
 
@@ -68,4 +68,5 @@ beatswap({
     sequenceOrder,
     startPoint,
     useSilence,
+    beatLength,
 });
