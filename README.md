@@ -48,7 +48,7 @@ Having decided that you want to do this to your audio file called `bobsayshello.
 beatswap -i bobsayshello.wav -o bobsayshello_beatswapped.wav -b 1 -s adcb
 ```
 
-This means, take the input file (`-o`) `bobsayshello.wav`. When we're done beatswapping, output (`-o`) to the file named `bobsayshello_beatswapped.wav` (you have to specify this; the tool doesn't want to overwrite your original file accidentally). We want the beat length (`-b`) to be 1 second long. And finally, we want the sequence (`-s`) to be `adcb`.
+This means, take the input file (`-i`) `bobsayshello.wav`. When we're done beatswapping, output (`-o`) to the file named `bobsayshello_beatswapped.wav` (you have to specify this; the tool doesn't want to overwrite your original file accidentally). We want the beat length (`-b`) to be 1 second long. And finally, we want the sequence (`-s`) to be `adcb`.
 
 ### Other sequence usages
 
