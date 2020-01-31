@@ -15,12 +15,12 @@ const beatswap = (options) => {
     console.log('Attempting to read file from:', inFilePath);
     Ciseaux.from(inFilePath).then((originalTape) => {
         console.log('Done.');
-        const beatCount = originalTape.duration / beatLength;
+        const measureCount = originalTape.duration / beatLength;
 
         // Create a blank Tape to append to
         let runningTape = new Tape();
         // Split all of the tapes out by the number of beats there are. Bump by the startPoint, too.
-        let allSlices = originalTape.slice(startPoint).split(beatCount);
+        let allSlices = originalTape.slice(startPoint).split(measureCount);
         console.log('Processing', allSlices.length, 'beats...');
 
         let currentSequenceIndex = 0;

@@ -81,3 +81,5 @@ parameter | meaning | default
 ## TODOs
 
 - Support --end
+- More expressive sequence operations
+- Multifile beatswapping and splicing

@@ -10,6 +10,9 @@
   "license": "MIT",
   "dependencies": {
     "ciseaux": "^0.4.0",
-    "minimist": "^1.2.0"
+    "detect-file-type": "^0.2.7",
+    "fluent-ffmpeg": "^2.1.2",
+    "minimist": "^1.2.0",
+    "tiny-async-pool": "^1.1.0"
   }
 }
