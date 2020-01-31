@@ -2,6 +2,8 @@
 
 A Node.js utility for resequencing clips within WAV audio OR video files!!
 
+(Note: video is currently buggy and WIP. Better documentation is a TODO.)
+
 ## Resequencing?
 
 `beatswap` allows you to take an audio/video file and "resequence" it. This means that you can define what order you want the file to be split and reordered into. For example, if you wanted to do an Adam Edmond-style ["<song> but beats 2 and 4 are swapped" track](https://www.youtube.com/watch?v=dSvvlu5zTDQ), you can specify the sequence "ADCB" to say "play the A part, but then the D part, then the C part, and finally the B part". This script will then automatically recombulate (that's a word) the file according to your sequence.
