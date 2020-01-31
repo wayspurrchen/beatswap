@@ -1,17 +1,18 @@
-# beatswap - resequence audio, just because
+# beatswap - resequence audio AND video, just because
 
-A Node.js utility for resequencing clips within WAV audio files.
+A Node.js utility for resequencing clips within WAV audio OR video files!!
 
 ## Resequencing?
 
-`beatswap` allows you to take a WAV file and "resequence" it. This means that you can define what order you want the audio to be split and reordered into. For example, if you wanted to do an Adam Edmond-style ["<song> but beats 2 and 4 are swapped" track](https://www.youtube.com/watch?v=dSvvlu5zTDQ), you can specify the sequence "ADCB" to say "play the A part, but then the D part, then the C part, and finally the B part". This script will then automatically recombulate (that's a word) the file according to your sequence.
+`beatswap` allows you to take an audio/video file and "resequence" it. This means that you can define what order you want the file to be split and reordered into. For example, if you wanted to do an Adam Edmond-style ["<song> but beats 2 and 4 are swapped" track](https://www.youtube.com/watch?v=dSvvlu5zTDQ), you can specify the sequence "ADCB" to say "play the A part, but then the D part, then the C part, and finally the B part". This script will then automatically recombulate (that's a word) the file according to your sequence.
 
 ## Why would I do that?
 
 I have no idea.
 
 - Maybe you're an electronic musician who wants to sample some music
-- Maybe you want to chop and screw some random audio files
+- Maybe you want to chop and screw some random files
+- Maybe you're a glitch artist
 - Maybe you want to destroy music
 
 ## Installation
@@ -25,6 +26,8 @@ If you're good at computer stuff, I recommend using `Node Version Manager`:
 Once you have Node.js installed, use [the command line](https://lifehacker.com/a-command-line-primer-for-beginners-5633909) to install `beatswap`:
 
 `npm install -g beatswap`
+
+To use beatswap for video, you must have **ffmpeg** installed. [Follow the prerequisites instructions here to install it](https://github.com/fluent-ffmpeg/node-fluent-ffmpeg#prerequisites).
 
 ## Usage
 

@@ -18,7 +18,6 @@ const asyncPool = require('tiny-async-pool');
 
 // https://ffmpeg.org/ffmpeg.html
 
-
 const beatswap = (options) => {
     const {
         inFilePath,
@@ -26,6 +25,7 @@ const beatswap = (options) => {
         beatLength,
         sequenceOrder,
         startPoint,
+        useExistingSliceFiles,
     } = options;
 
     console.log('Warning: beatswapping video can take a long time!')
@@ -35,9 +35,9 @@ const beatswap = (options) => {
         fs.mkdirSync(tmpDir);
     }
 
-    const inputPathParse = path.parse(inFilePath);
-    const inputPathName = inputPathParse.name;
-    const inputPathExt = inputPathParse.ext;
+    const outputPathParse = path.parse(outFilePath);
+    const outputPathName = outputPathParse.name;
+    const outputPathExt = outputPathParse.ext;
 
     let duration;
     ffmpeg.ffprobe(inFilePath, function (err, metadata) {
@@ -71,9 +71,13 @@ const beatswap = (options) => {
         // tired to fix atm
         const actualBeatCount = beatarr.length;
 
+        const generateSliceOutPath = (i) => {
+            const tmpName = outputPathName + '_' + i + outputPathExt;
+            return path.resolve(tmpDir, tmpName);
+        };
+
         const kickOffFfmpeg = (i) => {
-            const tmpName = inputPathName + '_' + i + inputPathExt;
-            const outPath = path.resolve(tmpDir, tmpName);
+            const outPath = generateSliceOutPath(i);
             const seek = startPoint + (i * beatLength);
             return new Promise((resolve, reject) => {
                 ffmpeg(inFilePath)
@@ -81,8 +85,9 @@ const beatswap = (options) => {
                     .duration(beatLength)
                     // @TODO: Customize codec outputs
                     .on('start', function (commandLine) {
-                        // @TODO: Enable with debugging
-                        console.log('Spawned ffmpeg with command: ' + commandLine);
+                        if (global.verbose) {
+                            console.log('Spawned ffmpeg with command: ' + commandLine);
+                        }
                     })
                     .on('error', function (err) {
                         console.log('An error occurred while trying to slice video:', err.message);
@@ -100,59 +105,73 @@ const beatswap = (options) => {
                     .save(outPath)
             });
         };
-        asyncPool(20, beatarr, kickOffFfmpeg)
-            .then(results => {
-                console.log('Done slicing videos.');
-                console.log('Rebuilding into sequence.');
-                let merge = ffmpeg();
 
-                const reorderedClips = [];
+        let sliceFileResults;
+        // Debug trick for creating a ton of slices that failed while trying to merge.
+        if (useExistingSliceFiles) {
+            // https://superuser.com/questions/1200118/ffmpeg-command-line-any-way-around-the-maximum-character-limit
+            // ffmpeg -i /Users/way/Projects/Miscellaneous/beatswap/beatswaptmp/Bad_Romance_betascrewed_2.mkv -i /Users/way/Projects/Miscellaneous/beatswap/beatswaptmp/Bad_Romance_betascrewed_8.mkv -i /Users/way/Projects/Miscellaneous/beatswap/beatswaptmp/Bad_Romance_betascrewed_7.mkv -i /Users/way/Projects/Miscellaneous/beatswap/beatswaptmp/Bad_Romance_betascrewed_3.mkv -i /Users/way/Projects/Miscellaneous/beatswap/beatswaptmp/Bad_Romance_betascrewed_4.mkv -i /Users/way/Projects/Miscellaneous/beatswap/beatswaptmp/Bad_Romance_betascrewed_4.mkv -i /Users/way/Projects/Miscellaneous/beatswap/beatswaptmp/Bad_Romance_betascrewed_6.mkv -i /Users/way/Projects/Miscellaneous/beatswap/beatswaptmp/Bad_Romance_betascrewed_2.mkv -i /Users/way/Projects/Miscellaneous/beatswap/beatswaptmp/Bad_Romance_betascrewed_8.mkv -i /Users/way/Projects/Miscellaneous/beatswap/beatswaptmp/Bad_Romance_betascrewed_9.mkv -y -filter_complex concat=n=10:v=1:a=1 /Users/way/Projects/Miscellaneous/beatswap/Bad_Romance_betascrewed.mkv
+            // TODO: Work around lack of complex_filter_script functionality
+            sliceFileResults = new Promise((resolve) => {
+                resolve(beatarr.map(generateSliceOutPath));
+            });
+        } else {
+            sliceFileResults = asyncPool(20, beatarr, kickOffFfmpeg);
+        }
+        sliceFileResults.then(results => {
+            // console.log(results);
+            console.log('Done slicing videos.');
+            console.log('Rebuilding into sequence.');
+            let merge = ffmpeg();
 
-                // Lifted wholesale from the audio beatswapping.
-                let currentSequenceIndex = 0;
-                let currentSequenceFrame = 0;
-                for (let i = 0; i < actualBeatCount; i++) {
-                    const beatTarget = sequenceOrder[currentSequenceIndex];
-                    const sequenceFrameOffset = currentSequenceFrame * sequenceOrder.length;
-                    // @TODO: Implement outputting null
-                    if (beatTarget !== null) {
-                        const clipTargetIndex = sequenceFrameOffset + beatTarget;
-                        if (clipTargetIndex > actualBeatCount - 1) {
-                            reorderedClips.push(results[i]);
-                        } else {
-                            reorderedClips.push(results[clipTargetIndex]);
-                        }
-                    }
+            const reorderedClips = [];
 
-                    currentSequenceIndex++;
-                    if (currentSequenceIndex > sequenceOrder.length - 1) {
-                        currentSequenceIndex = 0;
-                        currentSequenceFrame++;
+            // Lifted wholesale from the audio beatswapping.
+            let currentSequenceIndex = 0;
+            let currentSequenceFrame = 0;
+            for (let i = 0; i < actualBeatCount; i++) {
+                const beatTarget = sequenceOrder[currentSequenceIndex];
+                const sequenceFrameOffset = currentSequenceFrame * sequenceOrder.length;
+                // @TODO: Implement outputting null
+                if (beatTarget !== null) {
+                    const clipTargetIndex = sequenceFrameOffset + beatTarget;
+                    if (clipTargetIndex > actualBeatCount - 1) {
+                        reorderedClips.push(results[i]);
+                    } else {
+                        reorderedClips.push(results[clipTargetIndex]);
                     }
                 }
-                // console.log(reorderedClips);
 
-                reorderedClips.forEach(clip => {
-                    merge = merge.input(clip);
-                });
-                merge
-                    .on('progress', progress => {
-                        // @TODO: Make this format better
-                        console.log(progress.timemark);
-                    })
-                    .on('start', commandLine => {
-                        // @TODO: Enable with debugging
-                        // console.log('Spawned ffmpeg with command: ' + commandLine);
-                    })
-                    .on('error', err => {
-                        console.log('An error occurred while trying to merge videos:', err.message);
-                        process.exit(-1);
-                    })
-                    .on('end', () => {
-                        console.log('Done. Whew! Output file to:', outFilePath);
-                    })
-                    .mergeToFile(outFilePath);
-            })
+                currentSequenceIndex++;
+                if (currentSequenceIndex > sequenceOrder.length - 1) {
+                    currentSequenceIndex = 0;
+                    currentSequenceFrame++;
+                }
+            }
+            // console.log(reorderedClips);
+
+            reorderedClips.forEach(clip => {
+                merge = merge.input(clip);
+            });
+            merge
+                .on('progress', progress => {
+                    // @TODO: Make this format better
+                    console.log(progress);
+                })
+                .on('start', commandLine => {
+                    if (global.verbose) {
+                        console.log('Spawned ffmpeg with command: ' + commandLine);
+                    }
+                })
+                .on('error', err => {
+                    console.log('An error occurred while trying to merge videos:', err.message);
+                    process.exit(-1);
+                })
+                .on('end', () => {
+                    console.log('Done. Whew! Output file to:', outFilePath);
+                })
+                .mergeToFile(outFilePath);
+        })
             .catch((err) => {
                 console.log(err);
                 process.exit(-1);

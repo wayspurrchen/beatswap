@@ -5,11 +5,16 @@ const detect = require('detect-file-type');
 const beatLength = parseFloat(argv.b || argv.beatlength);
 // Sequences will be sorted and then assigned alphabetically
 const sequenceString = argv.s || argv.sequence;
+const useExistingVideoSlices = !!argv['use-existing-video-slices'];
 const startPoint = parseFloat(argv['start'] || 0);
+const verbose = !!(argv.verbose || argv.v);
 const useSilence = !!(argv['use-silence']);
 const cwd = process.cwd();
 const inFileArg = argv.i;
 const outFileArg = argv.o;
+
+// hackity hack hack
+global.verbose = verbose;
 
 if (!inFileArg) {
     throw new Error('Must specify input WAV file path with -i')
@@ -72,7 +77,7 @@ detect.fromFile(inFilePath, (err, typeDetect) => {
 
     if (mimePrefix === 'audio') {
         console.log('Audio file detected; running beatswap in audio mode.');
-        const beatswapAudio = require('./index').beatswap;
+        const beatswapAudio = require('./audio').beatswap;
 
         beatswapAudio({
             inFilePath,
@@ -93,6 +98,7 @@ detect.fromFile(inFilePath, (err, typeDetect) => {
             startPoint,
             useSilence,
             beatLength,
+            useExistingSliceFiles: useExistingVideoSlices
         });
     } else {
         console.log('Unknown file type:', typeDetect);
