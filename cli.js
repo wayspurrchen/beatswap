@@ -46,9 +46,17 @@ const generateSequenceOrder = (sequenceString) => {
             sequenceCharMap[sc] = null;
         }
     });
-    const sequenceOrder = sequence.map(letter => {
-        if (sequenceCharMap[letter] !== null) {
-            return sequenceCharMap[letter] + 1;
+    const sequenceWithReversed = sequenceString.split('')
+    const sequenceOrder = sequenceWithReversed.map(letter => {
+        const reversed = letter.toUpperCase() === letter
+        const mapValue = sequenceCharMap[letter.toLowerCase()]
+        if (mapValue !== null) {
+            if (!reversed) {
+                return mapValue + 1;
+            } else {
+                // Using negative beat indices to represent reversed beats
+                return -(mapValue + 1);
+            }
         } else {
             return null;
         }
@@ -89,6 +97,11 @@ detect.fromFile(inFilePath, (err, typeDetect) => {
         });
     } else if (mimePrefix === 'video') {
         console.log('Video file detected; running beatswap in video mode.');
+        if (sequenceOrder.some(beatTarget => beatTarget < 0)) {
+            // TODO implement reversing for videos?
+            console.log("Reversing not supported in videos yet.")
+            process.exit(-1);
+        }
         const beatswapVideo = require('./video').beatswap;
 
         beatswapVideo({
