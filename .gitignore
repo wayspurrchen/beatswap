@@ -2,3 +2,8 @@ node_modules/
 .DS_Store
 *.mp3
 *.wav
+beatswaptmp/
+*.mkv
+*.mp4
+*.avi
+*.mov
