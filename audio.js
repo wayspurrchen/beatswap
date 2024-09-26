@@ -29,7 +29,12 @@ const beatswap = (options) => {
         let currentSequenceFrame = 0;
         for (let i = 0; i < allSlices.length; i++) {
             // This is the beat in the sequence we want to put in this slot
-            const beatTarget = sequenceOrder[currentSequenceIndex];
+            let beatTarget = sequenceOrder[currentSequenceIndex];
+            let reversed = false;
+            if (beatTarget < 0) {
+                beatTarget = -beatTarget;
+                reversed = true;
+            }
             // This is the adjustment we want to make for the current sequence frame,
             // given the sequence length
             const sequenceFrameOffset = currentSequenceFrame * sequenceOrder.length;
@@ -49,8 +54,13 @@ const beatswap = (options) => {
                 if (clipTargetIndex > allSlices.length - 1) {
                     runningTape = runningTape.concat(allSlices[i]);
                 } else {
-                    // Otherwise, just grab that dang clip and put it in there.
-                    runningTape = runningTape.concat(allSlices[clipTargetIndex]);
+                    if (reversed) {
+                        // reverse and concat.
+                        runningTape = runningTape.concat(allSlices[clipTargetIndex].reverse());
+                    } else {
+                        // Otherwise, just grab that dang clip and put it in there.
+                        runningTape = runningTape.concat(allSlices[clipTargetIndex]);
+                    }
                 }
             }
 
